@@ -1,97 +1,334 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيقي</title>
+    <title>نظام إدارة الطوابير الذكي الاحترافي – Enterprise QMS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { cairo: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        deptReception: '#2563eb', // أزرق رسمي
+                        deptSocial: '#059669',    // أخضر مؤسسي
+                        deptServices: '#d97706'   // برتقالي دافئ
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { font-family: 'Cairo', sans-serif; }
+        @keyframes numberPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.06); background-color: rgba(37, 99, 235, 0.1); }
+            100% { transform: scale(1); opacity: 1; }
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-        }
-        
-        p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .footer {
-            margin-top: 40px;
-            color: #999;
-            font-size: 0.9em;
-        }
+        .pulse-anim { animation: numberPulse 0.8s ease-in-out; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>👋 مرحباً!</h1>
-        <p>تطبيقك على GitHub Pages يعمل بنجاح!</p>
-        <p>يمكنك تعديل هذا الملف (<code>index.html</code>) وإضافة المحتوى الخاص بك.</p>
-        
-        <div class="button-group">
-            <button onclick="alert('مرحباً! 🎉')">اضغط هنا</button>
-            <button onclick="openGitHub()">فتح المستودع</button>
+<body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col justify-between">
+
+    <!-- شريط التنقل العلوي للتحكم بالواجهات -->
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex flex-wrap justify-between items-center shadow-sm print:hidden">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md">ن</div>
+            <div>
+                <h1 class="font-black text-base tracking-wide">النظام الذكي للطوابير</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">الإصدار المؤسسي الاحترافي</p>
+            </div>
         </div>
-        
-        <div class="footer">
-            <p>تم النشر بواسطة GitHub Pages ✨</p>
-        </div>
-    </div>
-    
+        <nav class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
+            <button onclick="switchScreen('client')" class="nav-btn px-4 py-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 rounded-xl text-xs font-bold hover:bg-blue-600 hover:text-white transition shadow-sm"><i class="fa-solid fa-user-plus ml-1"></i> المراجع</button>
+            <button onclick="switchScreen('display')" class="nav-btn px-4 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 rounded-xl text-xs font-bold hover:bg-emerald-600 hover:text-white transition shadow-sm"><i class="fa-solid fa-tv ml-1"></i> شاشة العرض</button>
+            <button onclick="switchScreen('employee')" class="nav-btn px-4 py-2 bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-900 rounded-xl text-xs font-bold hover:bg-purple-600 hover:text-white transition shadow-sm"><i class="fa-solid fa-headset ml-1"></i> لوحة الموظف</button>
+            <button onclick="switchScreen('admin')" class="nav-btn px-4 py-2 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900 rounded-xl text-xs font-bold hover:bg-amber-600 hover:text-white transition shadow-sm"><i class="fa-solid fa-chart-line ml-1"></i> لوحة المدير</button>
+            <button onclick="toggleDarkMode()" class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="تبديل الوضع الليلي"><i class="fa-solid fa-moon"></i></button>
+        </nav>
+    </header>
+
+    <!-- الحاويات الرئيسية للواجهات -->
+    <main class="flex-grow p-4 md:p-8 overflow-y-auto">
+
+        <!-- ⭐ 1) واجهة المراجع (Client Registration) -->
+        <section id="screen-client" class="screen-view max-w-xl mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-800 p-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex p-3 bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-2xl text-2xl mb-3"><i class="fa-solid fa-ticket"></i></div>
+                <h2 class="text-2xl font-black">إصدار تذكرة انتظار جديدة</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">الرجاء إدخال بياناتك بدقة لتوجيهك للقسم المختص</p>
+            </div>
+            
+            <form id="clientForm" onsubmit="handleClientSubmission(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">الاسم الكامل</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="cName" required placeholder="مثال: يوسف الذعار" class="w-full pr-11 pl-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">رقم الجوال</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400"><i class="fa-solid fa-phone"></i></span>
+                        <input type="tel" id="cPhone" required placeholder="05xxxxxxxx" class="w-full pr-11 pl-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">السجل المدني / الإقامة</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400"><i class="fa-solid fa-id-card"></i></span>
+                        <input type="text" id="cId" required placeholder="10xxxxxxxx" class="w-full pr-11 pl-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">القسم المطلوب</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400"><i class="fa-solid fa-building-user"></i></span>
+                        <select id="cDept" class="w-full pr-11 pl-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition text-sm appearance-none cursor-pointer">
+                            <option value="استقبال">مكتب الاستقبال والتوجيه</option>
+                            <option value="بحث اجتماعي">قسم البحث الاجتماعي</option>
+                            <option value="خدمات مستفيدين">قسم خدمات المستفيدين</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition duration-200 text-sm tracking-wide">إصدار التذكرة الآن</button>
+            </form>
+
+            <!-- نافذة نجاح الإصدار -->
+            <div id="ticketSuccessCard" class="hidden mt-6 p-6 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-2xl text-center">
+                <span class="inline-block p-2 bg-emerald-500 text-white rounded-full text-lg mb-2"><i class="fa-solid fa-check"></i></span>
+                <h3 class="font-bold text-emerald-800 dark:text-emerald-300 text-base">تم إصدار التذكرة بنجاح</h3>
+                <div id="generatedTicketNum" class="text-6xl font-black my-3 text-emerald-600 tracking-wider">A-101</div>
+                <p id="generatedDeptName" class="text-xs font-semibold text-slate-600 dark:text-slate-400">استقبال</p>
+                <div class="flex justify-center gap-3 mt-5">
+                    <button onclick="triggerIntegration('WhatsApp')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition"><i class="fa-brands fa-whatsapp ml-1"></i> إرسال واتساب</button>
+                    <button onclick="triggerIntegration('SMS')" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow transition"><i class="fa-solid fa-sms ml-1"></i> رسالة SMS</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⭐ 2) واجهة عرض الأرقام (Queue Display Screen) -->
+        <section id="screen-display" class="screen-view hidden max-w-7xl mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-800 p-8 min-h-[75vh] flex flex-col justify-between">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-5">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div class="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center font-black text-blue-600 text-lg border border-slate-200 dark:border-slate-700">شعار</div>
+                    <div>
+                        <h2 class="font-black text-xl">وكالة الوزارة لشؤون المستفيدين</h2>
+                        <p class="text-xs text-slate-500">نظام إدارة الطوابير والنداء الآلي</p>
+                    </div>
+                </div>
+                <div class="px-4 py-2 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 rounded-2xl text-xs font-bold">شاشة العرض المركزية</div>
+            </div>
+
+            <div id="displayAnimationBox" class="text-center py-16 transition-all duration-300">
+                <span class="text-xs font-extrabold tracking-widest text-slate-400 uppercase">الرقم الحالي قيد الخدمة</span>
+                <div id="dispCurrentNum" class="text-[130px] md:text-[180px] font-black tracking-wider text-blue-600 my-2 leading-none">---</div>
+                <div id="dispDeptName" class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-300">في انتظار النداء...</div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-5 text-sm">
+                <div id="displayDateTime" class="font-bold text-slate-500 text-sm">2026/09/03 – 03:02 PM</div>
+                <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="w-10 h-10 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-xs font-bold shadow-sm">QR</div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold">مسح لتقييم الخدمة</p>
+                        <p class="text-[10px] text-slate-400">رأيك يساهم في تحسين جودة الأداء</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⭐ 3) واجهة الموظف (Employee Control Panel) -->
+        <section id="screen-employee" class="screen-view hidden max-w-6xl mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-800 p-8">
+            <div class="flex justify-between items-center mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
+                <div>
+                    <h2 class="text-2xl font-black text-purple-600 dark:text-purple-400">لوحة تحكم الموظف</h2>
+                    <p class="text-xs text-slate-500 mt-1">الموظف المسؤول: <span class="font-bold text-slate-700 dark:text-slate-300">أحمد (مكتب الاستقبال)</span></p>
+                </div>
+                <div class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-600 rounded-full text-xs font-bold">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> متصل بالنظام الحي
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col h-[450px]">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">قائمة المنتظرين</span>
+                        <span id="empQueueCount" class="px-2 py-0.5 bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold">3</span>
+                    </div>
+                    <div id="empWaitingList" class="space-y-2.5 overflow-y-auto flex-grow pr-1">
+                        <div class="p-3.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                            <div>
+                                <span class="font-black text-base">A-102</span>
+                                <p class="text-xs text-slate-500">محمد علي</p>
+                            </div>
+                            <span class="text-xs px-2.5 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg font-bold">في الانتظار</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-slate-800/50 dark:to-purple-950/20 p-8 rounded-3xl border border-purple-100 dark:border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">التذكرة النشطة حالياً</span>
+                            <span class="text-xs text-slate-500">وقت الانتظار: 4.5 دقيقة</span>
+                        </div>
+                        <div id="empActiveNum" class="text-7xl md:text-8xl font-black my-6 text-slate-800 dark:text-white tracking-wider">A-101</div>
+                        <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border border-purple-100 dark:border-slate-700 space-y-1">
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">اسم المراجع: خالد عبدالله العتيبي</p>
+                            <p class="text-xs text-slate-500">السجل المدني: 109283xxxx | الجوال: 055123xxxx</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
+                        <button onclick="empAction('call')" class="py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 text-xs transition"><i class="fa-solid fa-bullhorn ml-1"></i> نداء صوتي</button>
+                        <button onclick="empAction('recall')" class="py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-500/20 text-xs transition"><i class="fa-solid fa-rotate-right ml-1"></i> إعادة نداء</button>
+                        <button onclick="empAction('skip')" class="py-3.5 bg-slate-500 hover:bg-slate-600 text-white font-bold rounded-2xl shadow-lg text-xs transition"><i class="fa-solid fa-forward ml-1"></i> تخطي</button>
+                        <button onclick="empAction('finish')" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 text-xs transition"><i class="fa-solid fa-check ml-1"></i> إنهاء المعاملة</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⭐ 4) واجهة المدير (Admin Dashboard) -->
+        <section id="screen-admin" class="screen-view hidden max-w-7xl mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-800 p-8">
+            <div class="flex justify-between items-center mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
+                <div>
+                    <h2 class="text-2xl font-black text-amber-600 dark:text-amber-400">لوحة تحكم المدير الاحترافية</h2>
+                    <p class="text-xs text-slate-500 mt-1">مؤشرات الأداء وتحليل حركة المراجعين اليومية</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="p-5 bg-blue-50/60 dark:bg-slate-800/60 border border-blue-100 dark:border-slate-700 rounded-2xl">
+                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400">إجمالي مراجعو اليوم</span>
+                    <h3 class="text-4xl font-black mt-2 text-slate-800 dark:text-white">142</h3>
+                </div>
+                <div class="p-5 bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-100 dark:border-slate-700 rounded-2xl">
+                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">المعاملات المنجزة</span>
+                    <h3 class="text-4xl font-black mt-2 text-slate-800 dark:text-white">128</h3>
+                </div>
+                <div class="p-5 bg-amber-50/60 dark:bg-slate-800/60 border border-amber-100 dark:border-slate-700 rounded-2xl">
+                    <span class="text-xs font-bold text-amber-600 dark:text-amber-400">متوسط وقت الانتظار</span>
+                    <h3 class="text-4xl font-black mt-2 text-slate-800 dark:text-white">4.2 د</h3>
+                </div>
+                <div class="p-5 bg-purple-50/60 dark:bg-slate-800/60 border border-purple-100 dark:border-slate-700 rounded-2xl">
+                    <span class="text-xs font-bold text-purple-600 dark:text-purple-400">رضا المستفيدين العام</span>
+                    <h3 class="text-4xl font-black mt-2 text-slate-800 dark:text-white">4.8 <span class="text-lg font-normal text-slate-400">/5</span></h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <h3 class="font-bold text-sm mb-4 text-slate-700 dark:text-slate-300"><i class="fa-solid fa-building-user text-blue-500 ml-2"></i> إدارة المكاتب والأقسام</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                            <span>مكتب الاستقبال</span>
+                            <span class="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-1 rounded-lg">نشط</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+                            <span>بحث اجتماعي</span>
+                            <span class="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-1 rounded-lg">نشط</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <h3 class="font-bold text-sm mb-4 text-slate-700 dark:text-slate-300"><i class="fa-solid fa-network-wired text-purple-500 ml-2"></i> ربط الخدمات الخارجية (APIs)</h3>
+                    <div class="space-y-2.5 text-xs">
+                        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center font-bold">
+                            <span>واتساب Business API</span>
+                            <span class="text-emerald-500"><i class="fa-solid fa-circle-check"></i> متصل</span>
+                        </div>
+                        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center font-bold">
+                            <span>Firebase Firestore</span>
+                            <span class="text-emerald-500"><i class="fa-solid fa-bolt"></i> مباشر</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <h3 class="font-bold text-sm mb-4 text-slate-700 dark:text-slate-300"><i class="fa-solid fa-shield-halved text-amber-500 ml-2"></i> الصلاحيات وسجلات النظام</h3>
+                    <div class="space-y-2.5 text-xs">
+                        <button class="w-full text-right p-3 bg-white dark:bg-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 font-bold transition">إدارة حسابات الموظفين</button>
+                        <button class="w-full text-right p-3 bg-white dark:bg-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 font-bold transition">عرض سجل التدقيق (Audit Log)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 px-6 text-center text-xs text-slate-500">
+        جميع الحقوق محفوظة © 2026 – نظام إدارة الطوابير والنداء الذكي (Enterprise QMS)
+    </footer>
+
     <script>
-        function openGitHub() {
-            window.open('https://github.com/thaaralsaif/waiting', '_blank');
+        function switchScreen(id) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById('screen-' + id).classList.remove('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-CA');
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const el = document.getElementById('displayDateTime');
+            if (el) el.innerText = `${dateStr} – ${timeStr}`;
+        }, 1000);
+
+        function handleClientSubmission(e) {
+            e.preventDefault();
+            const dept = document.getElementById('cDept').value;
+            const prefix = dept === 'استقبال' ? 'A' : (dept === 'بحث اجتماعي' ? 'B' : 'C');
+            const ticketNo = `${prefix}-${Math.floor(100 + Math.random() * 900)}`;
+
+            document.getElementById('generatedTicketNum').innerText = ticketNo;
+            document.getElementById('generatedDeptName').innerText = `مكتب ${dept}`;
+            document.getElementById('ticketSuccessCard').classList.remove('hidden');
+            updateDisplay(ticketNo, dept);
+        }
+
+        function updateDisplay(ticket, dept) {
+            const numBox = document.getElementById('dispCurrentNum');
+            const deptBox = document.getElementById('dispDeptName');
+            const animBox = document.getElementById('displayAnimationBox');
+
+            numBox.innerText = ticket;
+            deptBox.innerText = `مكتب ${dept}`;
+
+            if(dept === 'استقبال') numBox.className = "text-[130px] md:text-[180px] font-black tracking-wider text-deptReception my-2 leading-none";
+            else if(dept === 'بحث اجتماعي') numBox.className = "text-[130px] md:text-[180px] font-black tracking-wider text-deptSocial my-2 leading-none";
+            else numBox.className = "text-[130px] md:text-[180px] font-black tracking-wider text-deptServices my-2 leading-none";
+
+            animBox.classList.add('pulse-anim');
+            setTimeout(() => animBox.classList.remove('pulse-anim'), 800);
+        }
+
+        function triggerIntegration(type) {
+            alert(`تم إرسال بيانات التذكرة ورابط التقييم بنجاح عبر بروتوكول ${type} API!`);
+        }
+
+        function empAction(actionType) {
+            const actions = {
+                'call': 'جاري النداء الصوتي على التذكرة عبر مكبرات الصوت المركزية...',
+                'recall': 'إعادة النداء على التذكرة الحالية...',
+                'skip': 'تم تخطي التذكرة بنجاح.',
+                'finish': 'تم إنهاء المعاملة وإرسال استبيان تقييم الخدمة للمستفيد.'
+            };
+            alert(actions[actionType]);
         }
     </script>
 </body>
